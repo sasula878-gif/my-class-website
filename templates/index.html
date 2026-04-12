@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Наш Класс - Главная</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .current-lesson { background-color: #d1e7dd !important; font-weight: bold; border-left: 5px solid #198754; }
+    </style>
+</head>
+<body class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Привет, {{ user }}! 👋</h1>
+        <div>
+            {% if user == 'admin' %}
+                <a href="/create" class="btn btn-success me-2">+ Новое объявление</a>
+            {% endif %}
+            <a href="/logout" class="btn btn-outline-danger">Выйти</a>
+        </div>
+    </div>
+    <hr>
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="list-group shadow-sm">
+                <a href="/" class="list-group-item list-group-item-action active">🏠 Главная</a>
+                <a href="/gallery" class="list-group-item list-group-item-action">🖼️ Галерея</a>
+                <a href="/knowledge" class="list-group-item list-group-item-action">📚 База знаний</a>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <h3>📅 Расписание на сегодня</h3>
+            <table class="table table-bordered shadow-sm" id="scheduleTable">
+                <thead class="table-dark">
+                    <tr><th>#</th><th>Время</th><th>Предмет</th></tr>
+                </thead>
+                <tbody>
+                    <tr data-start="08:30" data-end="09:15"><td>1</td><td>08:30 - 09:15</td><td>Математика</td></tr>
+                    <tr data-start="09:25" data-end="10:10"><td>2</td><td>09:25 - 10:10</td><td>Русский язык</td></tr>
+                    <tr data-start="10:20" data-end="11:05"><td>3</td><td>10:20 - 11:05</td><td>Информатика</td></tr>
+                </tbody>
+            </table>
+            <h3 class="mt-5">📢 Доска объявлений</h3>
+            {% for post in posts %}
+                <div class="card mb-3 shadow-sm"><div class="card-body">
+                    <h5 class="card-title text-primary">{{ post['title'] }}</h5>
+                    <p class="card-text">{{ post['content'] }}</p>
+                </div></div>
+            {% endfor %}
+        </div>
+    </div>
+    <script>
+    function updateHighlight() {
+        const now = new Date();
+        const currentTime = now.getHours() * 60 + now.getMinutes();
+        document.querySelectorAll('#scheduleTable tbody tr').forEach(row => {
+            const startStr = row.getAttribute('data-start').split(':');
+            const endStr = row.getAttribute('data-end').split(':');
+            const startTime = parseInt(startStr[0]) * 60 + parseInt(startStr[1]);
+            const endTime = parseInt(endStr[0]) * 60 + parseInt(endStr[1]);
+            if (currentTime >= startTime && currentTime <= endTime) row.classList.add('current-lesson');
+            else row.classList.remove('current-lesson');
+        });
+    }
+    updateHighlight(); setInterval(updateHighlight, 30000);
+    </script>
+</body>
+</html>
