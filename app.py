@@ -122,6 +122,23 @@ def edit_schedule():
 def logout():
     session.clear()
     return redirect(url_for('login'))
+@app.route('/gallery')
+def gallery():
+    if 'user' not in session: return redirect(url_for('login'))
+    conn = get_db_connection()
+    photos = conn.execute('SELECT * FROM photos').fetchall()
+    conn.close()
+    # ВАЖНО: убедись, что передаешь user и role, чтобы меню работало!
+    return render_template('gallery.html', user=session['user'], role=session.get('role'), photos=photos)
+
+@app.route('/knowledge')
+def knowledge():
+    if 'user' not in session: return redirect(url_for('login'))
+    conn = get_db_connection()
+    materials = conn.execute('SELECT * FROM knowledge').fetchall()
+    conn.close()
+    # Здесь тоже передаем user и role
+    return render_template('knowledge.html', user=session['user'], role=session.get('role'), materials=materials)
 
 # Пути для постов, фото и базы знаний (с проверкой role == 'admin')...
 # [ОСТАЛЬНОЙ КОД БЕЗ ИЗМЕНЕНИЙ]
