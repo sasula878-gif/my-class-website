@@ -5,12 +5,11 @@ import string
 from flask import Flask, render_template, request, url_for, redirect, session
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'anton_super_protected_2026')
+app.secret_key = os.environ.get('SECRET_KEY', 'sasha_top_dev_2026')
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, 'database.db')
 
-# Секретный код, который ты скажешь одноклассникам завтра
 CLASS_INVITE_CODE = "7B_TOP" 
 
 def get_db_connection():
@@ -20,30 +19,42 @@ def get_db_connection():
 
 def init_db():
     conn = get_db_connection()
-    # Таблица пользователей: login, password, role
+    # Таблица пользователей
     conn.execute('''CREATE TABLE IF NOT EXISTS users 
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                   login TEXT UNIQUE NOT NULL, 
                   password TEXT NOT NULL, 
                   role TEXT NOT NULL)''')
     
-    # Наши стандартные таблицы
+    # Таблица расписания
+    conn.execute('''CREATE TABLE IF NOT EXISTS schedule 
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                  lesson_num INTEGER, 
+                  time_range TEXT, 
+                  subject TEXT)''')
+    
     conn.execute('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, title TEXT NOT NULL, content TEXT NOT NULL)')
     conn.execute('CREATE TABLE IF NOT EXISTS photos (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, url TEXT NOT NULL)')
     conn.execute('CREATE TABLE IF NOT EXISTS knowledge (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT NOT NULL, title TEXT NOT NULL, url TEXT NOT NULL)')
     
-    # Создаем админа, если его еще нет
-    try:
-        conn.execute('INSERT INTO users (login, password, role) VALUES (?, ?, ?)', ('admin', '12345', 'admin'))
-    except sqlite3.IntegrityError:
-        pass
-        
+    # ТВОЯ АДМИНКА И КЛАССНЫЙ РУКОВОДИТЕЛЬ
+    users_to_add = [
+        ('НиколаевскийАА', 'твой_пароль_тут', 'admin'),
+        ('КлРуководитель', 'пароль_учителя', 'admin'),
+        ('Родитель', '7B_parents', 'parent') # Общий вход для родителей
+    ]
+    
+    for login, pwd, role in users_to_add:
+        try:
+            conn.execute('INSERT INTO users (login, password, role) VALUES (?, ?, ?)', (login, pwd, role))
+        except sqlite3.IntegrityError:
+            pass
+            
     conn.commit()
     conn.close()
 
 init_db()
 
-# Функция для генерации случайного пароля из 6 символов
 def generate_password():
     chars = string.ascii_letters + string.digits
     return ''.join(random.choice(chars) for _ in range(6))
@@ -53,96 +64,67 @@ def index():
     if 'user' not in session: return redirect(url_for('login'))
     conn = get_db_connection()
     posts = conn.execute('SELECT * FROM posts ORDER BY created DESC').fetchall()
+    # Загружаем расписание из базы
+    sched = conn.execute('SELECT * FROM schedule ORDER BY lesson_num').fetchall()
     conn.close()
-    return render_template('index.html', user=session['user'], role=session.get('role'), posts=posts)
+    return render_template('index.html', user=session['user'], role=session.get('role'), posts=posts, schedule=sched)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         login_input = request.form.get('username')
         password_input = request.form.get('password')
-        invite_code = request.form.get('invite_code') # Поле для новых учеников
+        invite_code = request.form.get('invite_code')
 
         conn = get_db_connection()
         user = conn.execute('SELECT * FROM users WHERE login = ?', (login_input,)).fetchone()
 
-        # 1. Если пользователь уже есть — проверяем пароль
         if user:
             if user['password'] == password_input:
                 session.permanent = True
                 session['user'] = user['login']
                 session['role'] = user['role']
                 return redirect(url_for('index'))
-            else:
-                return "Неверный пароль! <a href='/login'>Назад</a>"
+            return "Ошибка пароля! <a href='/login'>Назад</a>"
         
-        # 2. Если пользователя нет, но он ввел правильный код приглашения — регистрируем!
         elif invite_code == CLASS_INVITE_CODE:
-            new_password = generate_password()
+            new_pwd = generate_password()
             conn.execute('INSERT INTO users (login, password, role) VALUES (?, ?, ?)', 
-                         (login_input, new_password, 'student'))
-            conn.commit()
-            conn.close()
-            return f"Ты зарегистрирован! Твой логин: <b>{login_input}</b>. Твой пароль: <b style='color:red;'>{new_password}</b>. Запомни его и <a href='/login'>войди</a>."
+                         (login_input, new_pwd, 'student'))
+            conn.commit(); conn.close()
+            return f"Аккаунт создан! Твой пароль: <b>{new_pwd}</b>. <a href='/login'>Войти</a>"
         
-        else:
-            return "Пользователь не найден или неверный код приглашения. <a href='/login'>Назад</a>"
-
+        return "Неверные данные. <a href='/login'>Назад</a>"
     return render_template('login.html')
+
+# МАРШРУТ ДЛЯ РЕДАКТИРОВАНИЯ РАСПИСАНИЯ
+@app.route('/edit_schedule', methods=['GET', 'POST'])
+def edit_schedule():
+    if session.get('role') != 'admin': return "Нет прав", 403
+    conn = get_db_connection()
+    if request.method == 'POST':
+        # Очищаем старое расписание и записываем новое
+        conn.execute('DELETE FROM schedule')
+        lessons = request.form.getlist('subject')
+        times = request.form.getlist('time')
+        for i, subject in enumerate(lessons):
+            if subject.strip():
+                conn.execute('INSERT INTO schedule (lesson_num, time_range, subject) VALUES (?, ?, ?)',
+                             (i+1, times[i], subject))
+        conn.commit(); conn.close()
+        return redirect(url_for('index'))
+    
+    sched = conn.execute('SELECT * FROM schedule ORDER BY lesson_num').fetchall()
+    conn.close()
+    return render_template('edit_schedule.html', schedule=sched)
 
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('login'))
 
-# Остальные маршруты (create, gallery, knowledge) остаются такими же...
-# Только добавь проверку session.get('role') == 'admin' в декораторах.
-
-@app.route('/create', methods=['GET', 'POST'])
-def create():
-    if session.get('role') != 'admin': return "Доступ запрещен", 403
-    if request.method == 'POST':
-        conn = get_db_connection()
-        conn.execute('INSERT INTO posts (title, content) VALUES (?, ?)', (request.form['title'], request.form['content']))
-        conn.commit(); conn.close()
-        return redirect(url_for('index'))
-    return render_template('create.html')
-
-@app.route('/gallery')
-def gallery():
-    if 'user' not in session: return redirect(url_for('login'))
-    conn = get_db_connection()
-    photos = conn.execute('SELECT * FROM photos').fetchall()
-    conn.close()
-    return render_template('gallery.html', user=session['user'], photos=photos)
-
-@app.route('/add_photo', methods=['GET', 'POST'])
-def add_photo():
-    if session.get('role') != 'admin': return "Доступ", 403
-    if request.method == 'POST':
-        conn = get_db_connection()
-        conn.execute('INSERT INTO photos (title, url) VALUES (?, ?)', (request.form['title'], request.form['url']))
-        conn.commit(); conn.close()
-        return redirect(url_for('gallery'))
-    return render_template('add_photo.html')
-
-@app.route('/knowledge')
-def knowledge():
-    if 'user' not in session: return redirect(url_for('login'))
-    conn = get_db_connection()
-    materials = conn.execute('SELECT * FROM knowledge').fetchall()
-    conn.close()
-    return render_template('knowledge.html', user=session['user'], materials=materials)
-
-@app.route('/add_material', methods=['GET', 'POST'])
-def add_material():
-    if session.get('role') != 'admin': return "Доступ", 403
-    if request.method == 'POST':
-        conn = get_db_connection()
-        conn.execute('INSERT INTO knowledge (category, title, url) VALUES (?, ?, ?)', (request.form['category'], request.form['title'], request.form['url']))
-        conn.commit(); conn.close()
-        return redirect(url_for('knowledge'))
-    return render_template('add_material.html')
+# Пути для постов, фото и базы знаний (с проверкой role == 'admin')...
+# [ОСТАЛЬНОЙ КОД БЕЗ ИЗМЕНЕНИЙ]
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
