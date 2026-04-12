@@ -77,3 +77,29 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+        login_input = request.form.get('username')
+        password_input = request.form.get('password')
+        invite_code = request.form.get('invite_code')
+
+        conn = get_db_connection()
+        user = conn.execute('SELECT * FROM users WHERE login = ?', (login_input,)).fetchone()
+
+        if user:
+            if user['password'] == password_input:
+                session.permanent = True
+                session['user'] = user['login']
+                session['role'] = user['role']
+                return redirect(url_for('index'))
+            return "Неверный пароль! <a href='/login'>Назад</a>"
+        
+        elif invite_code == CLASS_INVITE_CODE:
+            new_pwd = generate_password()
+            conn.execute('INSERT INTO users (login, password, role) VALUES (?, ?, ?)', 
+                         (login_input, new_pwd, 'student'))
+            conn.commit()
+            conn.close()
+            return f"Аккаунт создан! Твой логин: <b>{login_input}</b>, пароль: <b style='color:red;'>{new_pwd}</b>. <a href='/login'>Войти</a>"
+        
+        return "Пользователь не найден. <a href='/login'>Назад</a>"
+    
+    return render_template('login.html')
