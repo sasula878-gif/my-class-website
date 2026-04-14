@@ -2,34 +2,34 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>База знаний</title>
+    <title>База знаний 7Б</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>📚 База знаний</h1>
-        <div>
-            {% if user == 'admin' %}
-                <a href="/add_material" class="btn btn-success me-2">+ Добавить материал</a>
-            {% endif %}
-            <a href="/" class="btn btn-outline-secondary">Назад</a>
-        </div>
+<body class="bg-light">
+<nav class="navbar navbar-dark bg-success mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/">🏠 Назад на главную</a>
+        {% if role == 'admin' %}
+        <a href="/add_material" class="btn btn-outline-light btn-sm">+ Добавить материал</a>
+        {% endif %}
     </div>
-    <hr>
-    <div class="row">
+</nav>
+
+<div class="container">
+    <h2 class="mb-4">📚 База знаний</h2>
+    <div class="list-group shadow-sm">
         {% for item in materials %}
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-light text-muted small">{{ item['category'] }}</div>
-                <div class="card-body">
-                    <h5 class="card-title">{{ item['title'] }}</h5>
-                    <a href="{{ item['url'] }}" class="btn btn-sm btn-primary" target="_blank">Перейти к материалу</a>
-                </div>
+        <div class="list-group-item">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1 text-primary">{{ item.title }}</h5>
+                <span class="badge bg-secondary">{{ item.category }}</span>
             </div>
+            <a href="{{ item.url }}" target="_blank" class="btn btn-sm btn-link p-0">Открыть ссылку →</a>
         </div>
         {% else %}
-            <p>Здесь пока пусто. Начни добавлять учебники или ГДЗ!</p>
+        <p class="text-muted">Материалов пока нет.</p>
         {% endfor %}
     </div>
+</div>
 </body>
 </html>
