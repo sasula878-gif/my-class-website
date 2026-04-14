@@ -1,0 +1,27 @@
+<body style="font-family: sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px;">
+    <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px;">
+        <h2 style="text-align: center; color: #007bff;">📝 Регистрация 7Б</h2>
+        <form method="post">
+            <label>ФИО полностью:</label><br>
+            <input name="fio" placeholder="Иванов Иван Иванович" style="width:100%; margin-bottom:15px; padding:8px;" required><br>
+            
+            <label>Дата рождения:</label><br>
+            <input name="bday" type="date" style="width:100%; margin-bottom:15px; padding:8px;" required><br>
+            
+            <label>Твоя почта:</label><br>
+            <input name="email" type="email" placeholder="example@mail.ru" style="width:100%; margin-bottom:15px; padding:8px;" required><br>
+            
+            <label>Придумай логин:</label><br>
+            <input name="login" style="width:100%; margin-bottom:15px; padding:8px;" required><br>
+            
+            <label>Придумай пароль:</label><br>
+            <input name="password" type="password" style="width:100%; margin-bottom:15px; padding:8px;" required><br>
+            
+            <label style="color: red;">Код приглашения (от админа):</label><br>
+            <input name="invite" style="width:100%; margin-bottom:20px; padding:8px; border: 2px solid red;" required><br>
+            
+            <button type="submit" style="width:100%; background: #007bff; color: white; border: none; padding: 12px; border-radius: 5px; cursor: pointer;">Зарегистрироваться</button>
+        </form>
+        <p style="text-align: center;"><a href="/login">Уже есть аккаунт? Войти</a></p>
+    </div>
+</body>
