@@ -1,27 +1,43 @@
-<body style="font-family: sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px;">
-    <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px;">
-        <h2 style="text-align: center; color: #007bff;">📝 Регистрация 7Б</h2>
-        <form method="post">
-            <label>ФИО полностью:</label><br>
-            <input name="fio" placeholder="Иванов Иван Иванович" style="width:100%; margin-bottom:15px; padding:8px;" required><br>
-            
-            <label>Дата рождения:</label><br>
-            <input name="bday" type="date" style="width:100%; margin-bottom:15px; padding:8px;" required><br>
-            
-            <label>Твоя почта:</label><br>
-            <input name="email" type="email" placeholder="example@mail.ru" style="width:100%; margin-bottom:15px; padding:8px;" required><br>
-            
-            <label>Придумай логин:</label><br>
-            <input name="login" style="width:100%; margin-bottom:15px; padding:8px;" required><br>
-            
-            <label>Придумай пароль:</label><br>
-            <input name="password" type="password" style="width:100%; margin-bottom:15px; padding:8px;" required><br>
-            
-            <label style="color: red;">Код приглашения (от админа):</label><br>
-            <input name="invite" style="width:100%; margin-bottom:20px; padding:8px; border: 2px solid red;" required><br>
-            
-            <button type="submit" style="width:100%; background: #007bff; color: white; border: none; padding: 12px; border-radius: 5px; cursor: pointer;">Зарегистрироваться</button>
-        </form>
-        <p style="text-align: center;"><a href="/login">Уже есть аккаунт? Войти</a></p>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация 7Б</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+        <div class="card p-4 shadow-sm" style="width: 100%; max-width: 450px;">
+            <h2 class="text-center text-primary mb-4">📝 Регистрация</h2>
+            <form method="post">
+                <div class="mb-3">
+                    <label>ФИО полностью:</label>
+                    <input name="fio" class="form-control" placeholder="Иванов Иван Иванович" required>
+                </div>
+                <div class="mb-3">
+                    <label>Дата рождения:</label>
+                    <input name="bday" type="date" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label>Твоя почта:</label>
+                    <input name="email" type="email" class="form-control" placeholder="mail@example.com" required>
+                </div>
+                <div class="mb-3">
+                    <label>Логин:</label>
+                    <input name="login" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label>Пароль:</label>
+                    <input name="password" type="password" class="form-control" required>
+                </div>
+                <div class="mb-3 text-danger">
+                    <label>Код приглашения:</label>
+                    <input name="invite" class="form-control border-danger" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Создать аккаунт</button>
+            </form>
+            <p class="mt-3 text-center"><a href="/login">Уже зарегистрированы? Войти</a></p>
+        </div>
     </div>
 </body>
+</html>
