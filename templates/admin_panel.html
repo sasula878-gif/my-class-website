@@ -1,26 +1,59 @@
-<div style="max-width: 600px; margin: 20px auto; font-family: sans-serif;">
-    <h1>⚙️ Панель управления 7Б</h1>
-    
-    <div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 20px;">
-        <h3>Добавить ДЗ</h3>
-        <form method="post">
-            <input type="hidden" name="action" value="add_hw">
-            Предмет: <input name="subject" required><br>
-            Задание: <input name="task" required><br>
-            Дата: <input name="deadline" type="date"><br>
-            <button type="submit">Добавить</button>
-        </form>
+<body style="padding: 20px; font-family: sans-serif; background: #f8f9fa;">
+    <h1>🎛️ Центр управления полётами 7Б</h1>
+    <a href="/">← На главную</a><hr>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div style="background: white; padding: 20px; border-radius: 10px; shadow: sm;">
+            <h3>⏰ Расписание и Часы</h3>
+            <form method="post">
+                <input type="hidden" name="action" value="edit_sched">
+                {% for i in range(1, 8) %}
+                <div style="margin-bottom: 10px;">
+                    {{i}} урок: <input name="sub" placeholder="Предмет" style="width: 120px;"> 
+                    <input name="time" placeholder="08:30 - 09:15" style="width: 110px;">
+                </div>
+                {% endfor %}
+                <button type="submit" style="background: green; color: white;">Сохранить расписание</button>
+            </form>
+        </div>
+
+        <div style="background: white; padding: 20px; border-radius: 10px;">
+            <h3>📢 Объявления и удаление</h3>
+            <form method="post">
+                <input type="hidden" name="action" value="add_post">
+                <input name="t" placeholder="Заголовок" style="width: 100%;"><br>
+                <textarea name="c" placeholder="Текст новости" style="width: 100%; margin: 10px 0;"></textarea><br>
+                <button type="submit">Опубликовать</button>
+            </form>
+            <hr>
+            <h4>Список постов:</h4>
+            {% for p in posts %}
+            <form method="post" style="display: inline;">
+                <input type="hidden" name="action" value="del_post">
+                <input type="hidden" name="id" value="{{p.id}}">
+                <small>{{p.title}}</small> <button type="submit" style="color: red; border: none; background: none; cursor: pointer;">[Удалить]</button><br>
+            </form>
+            {% endfor %}
+        </div>
     </div>
 
-    <div style="border: 1px solid #ccc; padding: 15px;">
-        <h3>Новое объявление на стену</h3>
-        <form method="post">
-            <input type="hidden" name="action" value="add_post">
-            Заголовок: <input name="title" required><br>
-            Текст: <textarea name="content"></textarea><br>
-            <button type="submit">Опубликовать</button>
-        </form>
+    <div style="margin-top: 20px; background: white; padding: 20px; border-radius: 10px;">
+        <h3>🏅 Выдать ачивку или ДЗ</h3>
+        <div style="display: flex; gap: 40px;">
+            <form method="post">
+                <input type="hidden" name="action" value="add_ach">
+                <input name="l" placeholder="Логин ученика">
+                <input name="t" placeholder="За что ачивка">
+                <input name="i" placeholder="Эмодзи (🏆)">
+                <button type="submit">Вручить</button>
+            </form>
+            <form method="post">
+                <input type="hidden" name="action" value="add_hw">
+                <input name="s" placeholder="Предмет">
+                <input name="t" placeholder="Что задали">
+                <input name="d" type="date">
+                <button type="submit">Добавить ДЗ</button>
+            </form>
+        </div>
     </div>
-    
-    <p><a href="/">🏠 На главную</a></p>
-</div>
+</body>
