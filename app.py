@@ -33,7 +33,7 @@ def init_db():
     
     # Твой аккаунт (Админ)
     try:
-        conn.execute('INSERT INTO users (login, password, role) VALUES (?, ?, ?)', ('НиколаевскийАА', 'твой_пароль', 'admin'))
+        conn.execute('INSERT INTO users (login, password, role) VALUES (?, ?, ?)', ('НиколаевскийАА', '54267194360Sasha', 'admin'))
     except: pass
     conn.commit()
     conn.close()
