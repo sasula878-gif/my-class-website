@@ -1,25 +1,50 @@
-<div style="max-width: 500px; margin: 50px auto; font-family: sans-serif;">
-    <h2>⚙️ Добавить информацию</h2>
-    <a href="/">← Назад</a><hr>
+<div style="max-width: 800px; margin: 30px auto; font-family: sans-serif; background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.1);">
+    <h2 style="text-align: center; color: #0d6efd;">⚙ Панель управления 7Б</h2>
+    <a href="/" style="display: block; text-align: center; margin-bottom: 20px;">← На главную</a>
     
-    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-        <h3>📝 Новое ДЗ</h3>
-        <form method="post">
-            <input type="hidden" name="action" value="add_hw">
-            Предмет: <input name="s" required style="width:100%"><br><br>
-            Задание: <input name="t" required style="width:100%"><br><br>
-            Дата: <input name="d" type="date" style="width:100%"><br><br>
-            <button type="submit" style="width:100%; background: red; color:white; border:none; padding:10px;">Добавить ДЗ</button>
-        </form>
-    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div style="border: 1px solid #ddd; padding: 15px; border-radius: 10px;">
+            <h4>⏰ Расписание</h4>
+            <form method="post">
+                <input type="hidden" name="action" value="edit_sched">
+                {% for i in range(1, 7) %}
+                <input name="sub" placeholder="Предмет {{i}}" style="width: 45%;"> 
+                <input name="time" placeholder="08:30-09:15" style="width: 45%;"><br>
+                {% endfor %}
+                <button type="submit" style="width:100%; margin-top:10px; background: #198754; color:white; border:none; padding:5px;">Обновить уроки</button>
+            </form>
+        </div>
 
-    <div style="background: #e9ecef; padding: 20px; border-radius: 10px;">
-        <h3>📢 Новая новость</h3>
-        <form method="post">
-            <input type="hidden" name="action" value="add_post">
-            Заголовок: <input name="t" required style="width:100%"><br><br>
-            Текст: <textarea name="c" style="width:100%"></textarea><br><br>
-            <button type="submit" style="width:100%; background: blue; color:white; border:none; padding:10px;">Опубликовать</button>
-        </form>
+        <div style="border: 1px solid #ddd; padding: 15px; border-radius: 10px;">
+            <h4>📝 Новое ДЗ</h4>
+            <form method="post">
+                <input type="hidden" name="action" value="add_hw">
+                <input name="s" placeholder="Предмет" style="width:100%"><br>
+                <input name="t" placeholder="Задание" style="width:100%"><br>
+                <input name="d" type="date" style="width:100%"><br>
+                <button type="submit" style="width:100%; background: #dc3545; color:white; border:none; padding:5px; margin-top:5px;">Добавить</button>
+            </form>
+        </div>
+
+        <div style="border: 1px solid #ddd; padding: 15px; border-radius: 10px;">
+            <h4>📖 База знаний / ГДЗ</h4>
+            <form method="post">
+                <input type="hidden" name="action" value="add_kb">
+                <input name="s" placeholder="Предмет (Биология)" style="width:100%"><br>
+                <input name="t" placeholder="Название (Реферат)" style="width:100%"><br>
+                <input name="u" placeholder="Ссылка на файл" style="width:100%"><br>
+                <button type="submit" style="width:100%; background: #0dcaf0; border:none; padding:5px; margin-top:5px;">Добавить в базу</button>
+            </form>
+        </div>
+
+        <div style="border: 1px solid #ddd; padding: 15px; border-radius: 10px;">
+            <h4>🖼 Фото в галерею</h4>
+            <form method="post">
+                <input type="hidden" name="action" value="add_photo">
+                <input name="t" placeholder="Название альбома" style="width:100%"><br>
+                <input name="u" placeholder="Ссылка на фото" style="width:100%"><br>
+                <button type="submit" style="width:100%; background: #6c757d; color:white; border:none; padding:5px; margin-top:5px;">Добавить фото</button>
+            </form>
+        </div>
     </div>
 </div>
