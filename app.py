@@ -2,7 +2,7 @@ import sqlite3, os
 from flask import Flask, render_template, request, url_for, redirect, session
 
 app = Flask(__name__)
-app.secret_key = 'sasha_7b_fix'
+app.secret_key = 'sasha_7b_mega_final'
 
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'database.db')
 
@@ -13,12 +13,15 @@ def get_db_connection():
 
 def init_db():
     conn = get_db_connection()
+    # Создаем все нужные таблицы
     conn.execute('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, login TEXT UNIQUE, password TEXT, full_name TEXT, birth_date TEXT, role TEXT)')
     conn.execute('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, content TEXT)')
     conn.execute('CREATE TABLE IF NOT EXISTS homework (id INTEGER PRIMARY KEY AUTOINCREMENT, subject TEXT, task TEXT, deadline TEXT)')
     conn.execute('CREATE TABLE IF NOT EXISTS schedule (id INTEGER PRIMARY KEY AUTOINCREMENT, lesson_num INTEGER, time_range TEXT, subject TEXT)')
+    conn.execute('CREATE TABLE IF NOT EXISTS photos (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, url TEXT)')
+    conn.execute('CREATE TABLE IF NOT EXISTS knowledge (id INTEGER PRIMARY KEY AUTOINCREMENT, subject TEXT, title TEXT, url TEXT)')
     
-    # Твои доступы
+    # Твои доступы (замени пароли на свои)
     users = [('НиколаевскийАА', '54267194360Sasha', 'Николаевский А.А.', 'admin'), 
              ('КлРуководитель', 'учитель7б', 'Николаева И.В.', 'teacher'),
              ('Родитель', '7B_parents', 'Родитель', 'parent')]
@@ -33,11 +36,12 @@ init_db()
 def index():
     if 'user' not in session: return redirect(url_for('login'))
     conn = get_db_connection()
-    posts = conn.execute('SELECT * FROM posts').fetchall()
-    hw = conn.execute('SELECT * FROM homework').fetchall()
+    posts = conn.execute('SELECT * FROM posts ORDER BY id DESC').fetchall()
+    hw = conn.execute('SELECT * FROM homework ORDER BY deadline ASC').fetchall()
+    sched = conn.execute('SELECT * FROM schedule ORDER BY lesson_num').fetchall()
     bdays = conn.execute('SELECT full_name, birth_date FROM users WHERE birth_date IS NOT NULL').fetchall()
     conn.close()
-    return render_template('index.html', role=session.get('role'), posts=posts, homework=hw, bdays=bdays)
+    return render_template('index.html', role=session.get('role'), posts=posts, homework=hw, schedule=sched, bdays=bdays)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -59,9 +63,29 @@ def admin_panel():
             conn.execute('INSERT INTO homework (subject, task, deadline) VALUES (?,?,?)', (request.form['s'], request.form['t'], request.form['d']))
         elif action == 'add_post':
             conn.execute('INSERT INTO posts (title, content) VALUES (?,?)', (request.form['t'], request.form['c']))
+        elif action == 'edit_sched':
+            conn.execute('DELETE FROM schedule')
+            for i, s in enumerate(request.form.getlist('sub')):
+                if s.strip(): conn.execute('INSERT INTO schedule (lesson_num, time_range, subject) VALUES (?,?,?)', (i+1, request.form.getlist('time')[i], s))
+        elif action == 'add_photo':
+            conn.execute('INSERT INTO photos (title, url) VALUES (?,?)', (request.form['t'], request.form['u']))
+        elif action == 'add_kb':
+            conn.execute('INSERT INTO knowledge (subject, title, url) VALUES (?,?,?)', (request.form['s'], request.form['t'], request.form['u']))
         conn.commit()
     conn.close()
     return render_template('admin_panel.html')
+
+@app.route('/gallery')
+def gallery():
+    conn = get_db_connection()
+    photos = conn.execute('SELECT * FROM photos').fetchall()
+    return render_template('gallery.html', photos=photos)
+
+@app.route('/knowledge')
+def knowledge():
+    conn = get_db_connection()
+    kb = conn.execute('SELECT * FROM knowledge').fetchall()
+    return render_template('knowledge.html', kb=kb)
 
 @app.route('/logout')
 def logout():
