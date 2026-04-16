@@ -1,53 +1,50 @@
-<div style="max-width: 900px; margin: 20px auto; font-family: 'Segoe UI', sans-serif; background: #fff; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-    <h2 style="text-align: center; color: #0d6efd; margin-bottom: 10px;">⚙ Управление 7Б Классом</h2>
-    <p style="text-align: center;"><a href="/" style="text-decoration: none; color: #6c757d;">← Вернуться на главную</a></p>
+<div style="max-width: 900px; margin: 20px auto; font-family: sans-serif; background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+    <h2 style="text-align: center; color: #0d6efd;">⚙️ Панель управления 7Б</h2>
+    <p style="text-align: center;"><a href="/">← На главную</a></p>
     <hr>
     
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-        <div style="border: 2px solid #e9ecef; padding: 15px; border-radius: 15px; background: #f8f9fa;">
-            <h4 style="color: #0d6efd;">📢 Опубликовать новость</h4>
+        <div style="border: 2px solid #e9ecef; padding: 15px; border-radius: 10px; background: #f8f9fa;">
+            <h4>📢 Новости</h4>
             <form method="post">
                 <input type="hidden" name="action" value="add_post">
-                <input name="t" placeholder="Заголовок новости" style="width:100%; margin-bottom: 10px; padding: 8px; border-radius: 5px; border: 1px solid #ddd;" required>
-                <textarea name="c" placeholder="Текст сообщения..." style="width:100%; height: 80px; margin-bottom: 10px; padding: 8px; border-radius: 5px; border: 1px solid #ddd;"></textarea>
-                <button type="submit" style="width:100%; background: #0d6efd; color:white; border:none; padding:10px; border-radius: 8px; cursor: pointer;">Выпустить пост</button>
+                <input name="t" placeholder="Заголовок" style="width:100%; margin-bottom:5px;" required>
+                <textarea name="c" placeholder="Текст..." style="width:100%; height:60px;"></textarea>
+                <button type="submit" style="width:100%; background:#0d6efd; color:white; border:none; padding:8px; border-radius:5px;">Опубликовать</button>
             </form>
         </div>
 
-        <div style="border: 2px solid #fee2e2; padding: 15px; border-radius: 15px; background: #fff5f5;">
-            <h4 style="color: #dc3545;">📝 Новое домашнее задание</h4>
+        <div style="border: 2px solid #ddd; padding: 15px; border-radius: 10px; background: #fff;">
+            <h4>🖼️ Добавить фото</h4>
+            <form method="post">
+                <input type="hidden" name="action" value="add_photo">
+                <input name="t" placeholder="Название (Напр: Поход)" style="width:100%; margin-bottom:5px;" required>
+                <input name="u" placeholder="Ссылка на фото (URL)" style="width:100%; margin-bottom:5px;" required>
+                <button type="submit" style="width:100%; background:#6c757d; color:white; border:none; padding:8px; border-radius:5px;">Добавить в галерею</button>
+            </form>
+        </div>
+
+        <div style="border: 2px solid #fee2e2; padding: 15px; border-radius: 10px; background: #fff5f5;">
+            <h4>📝 ДЗ</h4>
             <form method="post">
                 <input type="hidden" name="action" value="add_hw">
-                <input name="s" placeholder="Предмет" style="width:100%; margin-bottom: 10px; padding: 8px; border: 1px solid #ddd;" required>
-                <input name="t" placeholder="Что задали?" style="width:100%; margin-bottom: 10px; padding: 8px; border: 1px solid #ddd;" required>
-                <input name="d" type="date" style="width:100%; margin-bottom: 10px; padding: 8px; border: 1px solid #ddd;">
-                <button type="submit" style="width:100%; background: #dc3545; color:white; border:none; padding:10px; border-radius: 8px;">Добавить задание</button>
+                <input name="s" placeholder="Предмет" style="width:100%; margin-bottom:5px;" required>
+                <input name="t" placeholder="Задание" style="width:100%; margin-bottom:5px;" required>
+                <input name="d" type="date" style="width:100%; margin-bottom:5px;">
+                <button type="submit" style="width:100%; background:#dc3545; color:white; border:none; padding:8px; border-radius:5px;">Добавить</button>
             </form>
         </div>
 
-        <div style="border: 2px solid #d1fae5; padding: 15px; border-radius: 15px; background: #f0fdf4;">
-            <h4 style="color: #198754;">⏰ Расписание уроков</h4>
+        <div style="border: 2px solid #d1fae5; padding: 15px; border-radius: 10px; background: #f0fdf4;">
+            <h4>⏰ Уроки</h4>
             <form method="post">
                 <input type="hidden" name="action" value="edit_sched">
                 {% for i in range(1, 7) %}
-                <div style="display: flex; gap: 5px; margin-bottom: 5px;">
-                    <span style="padding-top: 5px;">{{i}}.</span>
-                    <input name="sub" placeholder="Предмет" style="width: 50%; padding: 5px;"> 
-                    <input name="time" placeholder="08:30" style="width: 40%; padding: 5px;">
+                <div style="margin-bottom:3px;">
+                    {{i}}. <input name="sub" placeholder="Предмет" style="width:40%;"> <input name="time" placeholder="08:30" style="width:30%;">
                 </div>
                 {% endfor %}
-                <button type="submit" style="width:100%; background: #198754; color:white; border:none; padding:10px; border-radius: 8px; margin-top: 5px;">Обновить все уроки</button>
-            </form>
-        </div>
-
-        <div style="border: 2px solid #e0f2fe; padding: 15px; border-radius: 15px; background: #f0f9ff;">
-            <h4 style="color: #0ea5e9;">📖 База Знаний / ГДЗ</h4>
-            <form method="post">
-                <input type="hidden" name="action" value="add_kb">
-                <input name="s" placeholder="Предмет" style="width:100%; margin-bottom: 5px; padding: 5px;">
-                <input name="t" placeholder="Тема (например, Решебник)" style="width:100%; margin-bottom: 5px; padding: 5px;">
-                <input name="u" placeholder="Ссылка на файл/сайт" style="width:100%; margin-bottom: 5px; padding: 5px;">
-                <button type="submit" style="width:100%; background: #0ea5e9; color:white; border:none; padding:10px; border-radius: 8px;">Добавить в ГДЗ</button>
+                <button type="submit" style="width:100%; background:#198754; color:white; border:none; padding:8px; border-radius:5px;">Обновить</button>
             </form>
         </div>
     </div>
