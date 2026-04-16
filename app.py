@@ -70,6 +70,14 @@ def register():
     return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        # Печатаем в консоль Render, что мы вводим (для отладки)
+        print(f"Пытаемся войти: {request.form['username']} / {request.form['password']}")
+        # ... остальной код входа ...
+
 def login():
     if request.method == 'POST':
         conn = get_db_connection()
