@@ -2,64 +2,91 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>7Б Класс</title>
+    <title>Портал 7Б</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { --bg: #f4f7f6; --text: #333; }
+        body.dark { --bg: #1a1a1a; --text: #f0f0f0; background: var(--bg); color: var(--text); }
+        .card { border-radius: 15px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        body.dark .card { background: #2d2d2d; color: #fff; }
+        .timer-box { background: linear-gradient(135deg, #007bff, #0056b3); color: white; border-radius: 15px; padding: 20px; text-align: center; }
+    </style>
 </head>
 <body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container">
-            <a class="navbar-brand" href="/">Сайт 7Б</a>
+            <a class="navbar-brand fw-bold" href="/">7Б КЛАСС</a>
+            <button class="btn btn-sm btn-outline-light me-3" onclick="document.body.classList.toggle('dark')">🌙 Тема</button>
             <div class="navbar-nav ms-auto">
                 <a class="nav-link" href="/gallery">📸 Фото</a>
                 <a class="nav-link" href="/achievements">🏆 Ачивки</a>
-                {% if role in ['admin', 'teacher'] %}
-                <a class="nav-link text-warning fw-bold" href="/admin_panel">⚙️ Админка</a>
-                {% endif %}
-                <a class="nav-link" href="/logout">Выход</a>
+                {% if role in ['admin', 'teacher'] %}<a class="nav-link text-warning" href="/admin_panel">⚙️ Админка</a>{% endif %}
+                <a class="nav-link" href="/logout">🚪 Выход</a>
             </div>
         </div>
     </nav>
 
     <div class="container">
+        <div class="timer-box shadow mb-4">
+            <h5 class="mb-1">🔔 До звонка осталось:</h5>
+            <h2 id="countdown" class="display-4 fw-bold">--:--</h2>
+            <p id="timer-status" class="small opacity-75">Загрузка...</p>
+        </div>
+
         <div class="row">
             <div class="col-md-4">
-                <div class="card mb-4 shadow-sm">
-                    <div class="card-header bg-warning fw-bold">🎂 Именинники</div>
-                    <ul class="list-group list-group-flush">
-                        {% for bday in bdays %}
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span>{{ bday.full_name }}</span>
-                            <small class="text-muted">{{ bday.birth_date }}</small>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                
-                <div class="card shadow-sm">
+                <div class="card mb-4">
                     <div class="card-header bg-danger text-white fw-bold">📝 Домашнее задание</div>
                     <ul class="list-group list-group-flush">
                         {% for h in homework %}
-                        <li class="list-group-item">
-                            <strong>{{ h.subject }}:</strong> {{ h.task }}<br>
-                            <small class="text-danger">Срок: {{ h.deadline }}</small>
-                        </li>
+                        <li class="list-group-item"><b>{{h.subject}}:</b> {{h.task}} <br><small class="text-danger">{{h.deadline}}</small></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-header bg-warning fw-bold">🎂 Дни рождения</div>
+                    <ul class="list-group list-group-flush">
+                        {% for b in bdays %}
+                        <li class="list-group-item d-flex justify-content-between"><span>{{b.full_name}}</span><small>{{b.birth_date}}</small></li>
                         {% endfor %}
                     </ul>
                 </div>
             </div>
-
             <div class="col-md-8">
-                <h3 class="mb-3">📢 Новости класса</h3>
-                {% for post in posts %}
-                <div class="card mb-3 shadow-sm border-start border-4 border-primary">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ post.title }}</h5>
-                        <p class="card-text">{{ post.content }}</p>
-                    </div>
+                <h3 class="mb-3">📢 Последние новости</h3>
+                {% for p in posts %}
+                <div class="card mb-3 border-start border-4 border-primary">
+                    <div class="card-body"><h5>{{p.title}}</h5><p>{{p.content}}</p></div>
                 </div>
                 {% endfor %}
             </div>
         </div>
     </div>
+
+    <script>
+        const schedule = [
+            {s:"08:30", e:"09:15"}, {s:"09:25", e:"10:10"}, {s:"10:20", e:"11:05"},
+            {s:"11:25", e:"12:10"}, {s:"12:20", e:"13:05"}, {s:"13:15", e:"14:00"}
+        ];
+        function tick() {
+            const now = new Date();
+            const cur = now.getHours()*60 + now.getMinutes();
+            const sec = now.getSeconds();
+            let target = -1, stat = "Уроки кончились";
+            for(let l of schedule) {
+                const [sH, sM] = l.s.split(':').map(Number), [eH, eM] = l.e.split(':').map(Number);
+                const s = sH*60+sM, e = eH*60+eM;
+                if(cur < s) { target = s; stat = "До начала урока"; break; }
+                else if(cur < e) { target = e; stat = "До конца урока"; break; }
+            }
+            if(target != -1) {
+                const diff = target*60 - (cur*60+sec);
+                const m = Math.floor(diff/60), s = diff%60;
+                document.getElementById('countdown').innerText = `${m}:${s<10?'0'+s:s}`;
+                document.getElementById('timer-status').innerText = stat;
+            } else { document.getElementById('countdown').innerText = "00:00"; }
+        }
+        setInterval(tick, 1000); tick();
+    </script>
 </body>
 </html>
